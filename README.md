@@ -2,6 +2,16 @@
 
 A warm, library-feeling iOS read-later app. Save URLs from Safari via the Share Extension, read them in a focused reader with parchment tones and serif fonts.
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/screen-stacks.png" width="19%" alt="Stacks" />
+  <img src="screenshots/screen-shelves.png" width="19%" alt="Shelves" />
+  <img src="screenshots/screen-reader.png" width="19%" alt="Reader" />
+  <img src="screenshots/screen-search.png" width="19%" alt="Search" />
+  <img src="screenshots/screen-settings.png" width="19%" alt="Settings" />
+</p>
+
 ## What it is
 
 LinkStock is your personal reading room — not a feed. Articles wait patiently on the shelf until you're ready. Organised by collections and tags, readable offline, beautiful to look at.
@@ -19,8 +29,8 @@ LinkStock is your personal reading room — not a feed. Articles wait patiently 
 ## Stack
 
 - **Expo + React Native** — iOS-first
-- **React Navigation** — tab + stack navigation
-- **AsyncStorage / MMKV** — local-first, no backend in v1
+- **Expo Router** — file-based routing with tab + stack navigation
+- **MMKV** — fast synchronous local storage, no backend in v1
 - **expo-font** — Newsreader, Lora, Crimson Pro, EB Garamond, DM Sans, DM Mono
 - **react-native-svg** — thin-stroke icon set
 

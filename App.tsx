@@ -7,6 +7,7 @@ import { ThemeProvider, useTheme } from './hooks/ThemeContext';
 import { AppFontLoader } from './hooks/AppFontLoader';
 import { BottomNav } from './components/BottomNav';
 import { StacksScreen }   from './screens/StacksScreen';
+import { ReaderScreen }   from './screens/ReaderScreen';
 import { ShelvesScreen }  from './screens/ShelvesScreen';
 import { SearchScreen }   from './screens/SearchScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
@@ -23,7 +24,7 @@ function Shell() {
   };
 
   const screen = readerId != null
-    ? <StacksScreen onOpenItem={(id) => setReaderId(id)} />
+    ? <ReaderScreen itemId={readerId} onBack={() => setReaderId(null)} />
     : tab === 'inbox'    ? <StacksScreen onOpenItem={(id) => setReaderId(id)} />
     : tab === 'shelves'  ? <ShelvesScreen />
     : tab === 'search'   ? <SearchScreen />

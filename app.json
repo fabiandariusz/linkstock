@@ -10,7 +10,12 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.linkstock.app",
       "entitlements": {
-        "com.apple.security.application-groups": ["group.com.linkstock.shared"]
+        "com.apple.security.application-groups": [
+          "group.com.linkstock.shared"
+        ]
+      },
+      "infoPlist": {
+        "AppGroup": "group.com.linkstock.shared"
       }
     },
     "android": {
@@ -24,6 +29,16 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-share-extension",
+        {
+          "activationRules": [
+            { "type": "url", "max": 1 }
+          ]
+        }
+      ]
+    ]
   }
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react-native';
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react-native';
 import { ThemeProvider } from '../hooks/ThemeContext';
 import { SavePopover } from '../components/SavePopover';
 
@@ -58,7 +58,29 @@ describe('SavePopover', () => {
 
   test('renders tag input', () => {
     renderPopover();
-    expect(screen.getByPlaceholderText('Tags (comma-separated)')).toBeTruthy();
+    expect(screen.getByPlaceholderText('Add tag…')).toBeTruthy();
+  });
+
+  test('tapping × on a tag pill removes it', () => {
+    renderPopover();
+    fireEvent.changeText(screen.getByPlaceholderText('Add tag…'), 'react,');
+    expect(screen.getByText('react')).toBeTruthy();
+    fireEvent.press(screen.getByRole('button', { name: 'Remove react' }));
+    expect(screen.queryByText('react')).toBeNull();
+  });
+
+  test('typing a comma adds a tag pill and clears the input', () => {
+    renderPopover();
+    fireEvent.changeText(screen.getByPlaceholderText('Add tag…'), 'react,');
+    expect(screen.getByText('react')).toBeTruthy();
+    expect(screen.getByPlaceholderText('Add tag…').props.value).toBe('');
+  });
+
+  test('submitting a tag in the tag input adds it as a pill', () => {
+    renderPopover();
+    fireEvent.changeText(screen.getByPlaceholderText('Add tag…'), 'react');
+    fireEvent(screen.getByPlaceholderText('Add tag…'), 'submitEditing');
+    expect(screen.getByText('react')).toBeTruthy();
   });
 
   test('Save button calls store.saveItem with url, title, collectionId, tags and calls onSaved', async () => {
@@ -69,7 +91,8 @@ describe('SavePopover', () => {
     fireEvent.changeText(screen.getByPlaceholderText('Paste a URL…'), 'https://example.com');
     fireEvent.changeText(screen.getByPlaceholderText('Title'), 'My Article');
     fireEvent.press(screen.getByRole('button', { name: '🎨 Design' }));
-    fireEvent.changeText(screen.getByPlaceholderText('Tags (comma-separated)'), 'design, ux');
+    fireEvent.changeText(screen.getByPlaceholderText('Add tag…'), 'design,');
+    fireEvent.changeText(screen.getByPlaceholderText('Add tag…'), 'ux,');
 
     fireEvent.press(screen.getByRole('button', { name: 'Save' }));
 
@@ -85,7 +108,6 @@ describe('SavePopover', () => {
         collectionId: 'c1',
         tags: ['design', 'ux'],
       });
-      expect(onSaved).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -110,6 +132,37 @@ describe('SavePopover', () => {
     expect(onSaved).not.toHaveBeenCalled();
     const itemsSaved = AsyncStorage.setItem.mock.calls.some(([k]: [string]) => k === 'linkstock:items');
     expect(itemsSaved).toBe(false);
+  });
+
+  test('after saving, form fields are hidden', async () => {
+    renderPopover();
+    fireEvent.changeText(screen.getByPlaceholderText('Paste a URL…'), 'https://example.com');
+    fireEvent.press(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => screen.getByText('Saved!'));
+    expect(screen.queryByPlaceholderText('Paste a URL…')).toBeNull();
+    expect(screen.queryByPlaceholderText('Title')).toBeNull();
+    expect(screen.queryByPlaceholderText('Add tag…')).toBeNull();
+  });
+
+  test('after saving, confirmation "Saved!" message is shown', async () => {
+    renderPopover();
+    fireEvent.changeText(screen.getByPlaceholderText('Paste a URL…'), 'https://example.com');
+    fireEvent.press(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(screen.getByText('Saved!')).toBeTruthy());
+  });
+
+  test('calls onSaved after 1.1 s following confirmation', async () => {
+    jest.useFakeTimers();
+    const onSaved = jest.fn();
+    renderPopover({ onSaved });
+    fireEvent.changeText(screen.getByPlaceholderText('Paste a URL…'), 'https://example.com');
+    fireEvent.press(screen.getByRole('button', { name: 'Save' }));
+    await act(async () => {});  // flush async save + setPhase('confirm')
+    expect(screen.getByText('Saved!')).toBeTruthy();
+    expect(onSaved).not.toHaveBeenCalled();
+    await act(async () => { jest.advanceTimersByTime(1100); });
+    expect(onSaved).toHaveBeenCalledTimes(1);
+    jest.useRealTimers();
   });
 
   test('tapping a collection chip selects it; tapping again deselects', async () => {

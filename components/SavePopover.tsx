@@ -21,14 +21,18 @@ export function SavePopover({ visible, onClose, onSaved }: Props) {
   const [title, setTitle] = useState('');
   const [collections, setCollections] = useState<Collection[]>([]);
   const [collectionId, setCollectionId] = useState<string | null>(null);
-  const [tags, setTags] = useState('');
+  const [tagPills, setTagPills] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+  const [phase, setPhase] = useState<'form' | 'confirm'>('form');
 
   useEffect(() => {
     if (!visible) return;
     setUrl('');
     setTitle('');
-    setTags('');
+    setTagPills([]);
+    setTagInput('');
     setCollectionId(null);
+    setPhase('form');
     AsyncStorage.getItem(COLLECTIONS_KEY).then(raw => {
       setCollections(raw ? JSON.parse(raw) : []);
     });
@@ -36,15 +40,23 @@ export function SavePopover({ visible, onClose, onSaved }: Props) {
 
   async function handleSave() {
     if (!url.trim()) return;
-    const tagList = tags.split(',').map(t => t.trim()).filter(Boolean);
-    await store.saveItem(url.trim(), { title: title.trim(), collectionId, tags: tagList });
-    onSaved();
+    await store.saveItem(url.trim(), { title: title.trim(), collectionId, tags: tagPills });
+    setPhase('confirm');
+    setTimeout(onSaved, 1100);
   }
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <View style={[styles.sheet, { backgroundColor: colors.card }]}>
+          {phase === 'confirm' ? (
+            <View style={styles.confirmView}>
+              <Text style={{ fontSize: 32 }}>✓</Text>
+              <Text style={{ color: colors.ink, fontSize: 20, fontWeight: '600' }}>Saved!</Text>
+              <Text style={{ color: colors.ink2, fontSize: 14, fontStyle: 'italic' }}>Open the app whenever you're ready.</Text>
+            </View>
+          ) : null}
+          {phase === 'form' && <>
           <TextInput
             placeholder="Paste a URL…"
             placeholderTextColor={colors.muted}
@@ -60,13 +72,39 @@ export function SavePopover({ visible, onClose, onSaved }: Props) {
             onChangeText={setTitle}
             style={[styles.input, { color: colors.ink, borderColor: colors.rule }]}
           />
-          <TextInput
-            placeholder="Tags (comma-separated)"
-            placeholderTextColor={colors.muted}
-            value={tags}
-            onChangeText={setTags}
-            style={[styles.input, { color: colors.ink, borderColor: colors.rule }]}
-          />
+          <View style={[styles.tagRow, { borderColor: colors.rule }]}>
+            {tagPills.map(tag => (
+              <View key={tag} style={[styles.tagPill, { backgroundColor: colors.accentSoft }]}>
+                <Text style={{ color: colors.ink, fontSize: 13 }}>{tag}</Text>
+                <TouchableOpacity
+                  onPress={() => setTagPills(tagPills.filter(t => t !== tag))}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Remove ${tag}`}
+                >
+                  <Text style={{ color: colors.ink2, fontSize: 13, marginLeft: 4 }}>×</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+            <TextInput
+              placeholder="Add tag…"
+              placeholderTextColor={colors.muted}
+              value={tagInput}
+              onChangeText={(text) => {
+                if (text.includes(',')) {
+                  const t = text.replace(',', '').trim();
+                  if (t) setTagPills([...tagPills, t]);
+                  setTagInput('');
+                } else {
+                  setTagInput(text);
+                }
+              }}
+              onSubmitEditing={() => {
+                const t = tagInput.trim();
+                if (t) { setTagPills([...tagPills, t]); setTagInput(''); }
+              }}
+              style={{ color: colors.ink, fontSize: 14, minWidth: 80, flexShrink: 1 }}
+            />
+          </View>
           {collections.length > 0 && (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
               {collections.map(c => (
@@ -104,6 +142,7 @@ export function SavePopover({ visible, onClose, onSaved }: Props) {
               <Text style={{ color: colors.card2, fontWeight: '600', fontSize: 15 }}>Save</Text>
             </TouchableOpacity>
           </View>
+          </>}
         </View>
       </View>
     </Modal>
@@ -115,8 +154,11 @@ const styles = StyleSheet.create({
   sheet:    { borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 20, gap: 12 },
   input:    { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 15 },
   chipRow:  { flexDirection: 'row' },
+  tagRow:   { flexDirection: 'row', flexWrap: 'wrap', borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, gap: 6, alignItems: 'center' },
+  tagPill:  { flexDirection: 'row', alignItems: 'center', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4 },
   chip:     { borderWidth: 1, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, marginRight: 8 },
   row:       { flexDirection: 'row', gap: 10, marginTop: 4 },
+  confirmView: { alignItems: 'center', paddingVertical: 32, gap: 8 },
   cancelBtn: { flex: 1, borderWidth: 1, borderRadius: 10, paddingVertical: 13, alignItems: 'center' },
   saveBtn:   { flex: 2, borderRadius: 10, paddingVertical: 13, alignItems: 'center' },
 });

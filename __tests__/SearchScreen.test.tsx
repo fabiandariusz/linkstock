@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react-native';
 import { ThemeProvider } from '../hooks/ThemeContext';
 import { SearchScreen } from '../screens/SearchScreen';
 import type { Item } from '../store/store';
@@ -126,30 +126,39 @@ describe('SearchScreen', () => {
 
   // ── Behavior 5: unread operator ──────────────────────────────────────────
   it('unread operator returns only unread items', async () => {
+    // isolated items — no text fields contain the word "unread"
+    const unreadItems = [
+      makeItem({ id: 'u1', title: 'Article Alpha', unread: true }),
+      makeItem({ id: 'u2', title: 'Article Beta', unread: false }),
+    ];
+    seedItems(unreadItems);
     renderScreen();
     await waitFor(() => expect(screen.getByPlaceholderText(/search/i)).toBeTruthy());
 
     fireEvent.changeText(screen.getByPlaceholderText(/search/i), 'unread');
 
     await waitFor(() => {
-      expect(screen.getByText('Why Memory Fails')).toBeTruthy();
-      expect(screen.getByText('Design Systems at Scale')).toBeTruthy();
-      expect(screen.queryByText('The Slow Web')).toBeNull();
-      expect(screen.queryByText('Writing Briefly')).toBeNull();
+      expect(screen.getByText('Article Alpha')).toBeTruthy();
+      expect(screen.queryByText('Article Beta')).toBeNull();
     });
   });
 
   // ── Behavior 6: video operator ───────────────────────────────────────────
   it('video operator returns only video items', async () => {
+    // isolated items — no text fields contain the word "video"
+    const videoItems = [
+      makeItem({ id: 'v1', title: 'Clip One', kind: 'video' }),
+      makeItem({ id: 'v2', title: 'Post Two', kind: 'article' }),
+    ];
+    seedItems(videoItems);
     renderScreen();
     await waitFor(() => expect(screen.getByPlaceholderText(/search/i)).toBeTruthy());
 
     fireEvent.changeText(screen.getByPlaceholderText(/search/i), 'video');
 
     await waitFor(() => {
-      expect(screen.getByText('Deliberate Practice')).toBeTruthy();
-      expect(screen.queryByText('The Slow Web')).toBeNull();
-      expect(screen.queryByText('Design Systems at Scale')).toBeNull();
+      expect(screen.getByText('Clip One')).toBeTruthy();
+      expect(screen.queryByText('Post Two')).toBeNull();
     });
   });
 
@@ -166,34 +175,25 @@ describe('SearchScreen', () => {
   });
 
   // ── Behavior 8: recent searches saved and shown on next visit ────────────
-  it('saves a search and shows it as a recent search', async () => {
-    const { unmount } = renderScreen();
-    await waitFor(() => expect(screen.getByPlaceholderText(/search/i)).toBeTruthy());
+  it('saves a search and shows it as a recent search on next visit', async () => {
+    jest.useFakeTimers();
+    try {
+      const { unmount } = renderScreen();
+      await waitFor(() => expect(screen.getByPlaceholderText(/search/i)).toBeTruthy());
 
-    fireEvent.changeText(screen.getByPlaceholderText(/search/i), 'cognition');
-    await waitFor(() => expect(AsyncStorage.setItem).toHaveBeenCalledWith(
-      'linkstock:recentSearches',
-      expect.stringContaining('cognition'),
-    ));
+      fireEvent.changeText(screen.getByPlaceholderText(/search/i), 'cognition');
 
-    unmount();
+      // flush the 500ms debounce — mock store is updated via setItem closure
+      await act(async () => { jest.advanceTimersByTime(600); });
 
-    // re-mount simulates new visit
-    const store: Record<string, string> = { 'linkstock:items': JSON.stringify(ITEMS) };
-    AsyncStorage.getItem.mockImplementation(async (key: string) => store[key] ?? null);
-    AsyncStorage.setItem.mockImplementation(async (key: string, value: string) => { store[key] = value; });
-    // seed the saved recents
-    const saved = JSON.parse(
-      (await AsyncStorage.setItem.mock.calls
-        .filter((c: [string, string]) => c[0] === 'linkstock:recentSearches')
-        .slice(-1)[0]?.[1]) ?? '[]'
-    );
-    store['linkstock:recentSearches'] = JSON.stringify(saved);
+      unmount();
+    } finally {
+      jest.useRealTimers();
+    }
 
+    // remount — same AsyncStorage mock closure, so saved recents persist
     renderScreen();
-    await waitFor(() => {
-      expect(screen.getByText('cognition')).toBeTruthy();
-    });
+    await waitFor(() => expect(screen.getByText('cognition')).toBeTruthy());
   });
 
   // ── Behavior 9: tapping recent search populates field ────────────────────

@@ -52,9 +52,10 @@ function savedLabel(isoString: string): string {
 
 type Props = {
   onOpenItem?: (id: string) => void;
+  collectionFilter?: string | null;
 };
 
-export function StacksScreen({ onOpenItem }: Props) {
+export function StacksScreen({ onOpenItem, collectionFilter }: Props) {
   const { colors } = useTheme();
   const [items, setItems] = useState<Item[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -99,17 +100,18 @@ export function StacksScreen({ onOpenItem }: Props) {
     }
   }, [onOpenItem]);
 
-  const resumeItem = items.find(i => i.progress > 0 && i.progress < 1);
+  const baseItems = collectionFilter ? items.filter(i => i.collectionId === collectionFilter) : items;
+  const resumeItem = baseItems.find(i => i.progress > 0 && i.progress < 1);
 
   const filterDefs: { id: FilterId; label: string; count: number }[] = [
-    { id: 'all',      label: 'All',         count: items.length },
-    { id: 'unread',   label: 'Unread',      count: items.filter(i => i.unread).length },
-    { id: 'today',    label: 'Today',       count: items.filter(i => isToday(i.savedAt)).length },
-    { id: 'progress', label: 'In Progress', count: items.filter(i => i.progress > 0 && i.progress < 1).length },
-    { id: 'video',    label: 'Video',       count: items.filter(i => i.kind === 'video').length },
+    { id: 'all',      label: 'All',         count: baseItems.length },
+    { id: 'unread',   label: 'Unread',      count: baseItems.filter(i => i.unread).length },
+    { id: 'today',    label: 'Today',       count: baseItems.filter(i => isToday(i.savedAt)).length },
+    { id: 'progress', label: 'In Progress', count: baseItems.filter(i => i.progress > 0 && i.progress < 1).length },
+    { id: 'video',    label: 'Video',       count: baseItems.filter(i => i.kind === 'video').length },
   ];
 
-  const filtered = items.filter(it => {
+  const filtered = baseItems.filter(it => {
     if (filter === 'unread')   return it.unread;
     if (filter === 'today')    return isToday(it.savedAt);
     if (filter === 'progress') return it.progress > 0 && it.progress < 1;

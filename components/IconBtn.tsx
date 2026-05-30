@@ -6,14 +6,16 @@ type Props = {
   children: React.ReactNode;
   onPress?: () => void;
   active?: boolean;
+  accessibilityLabel?: string;
 };
 
-export function IconBtn({ children, onPress, active = false }: Props) {
+export function IconBtn({ children, onPress, active = false, accessibilityLabel }: Props) {
   const { colors } = useTheme();
   return (
     <TouchableOpacity
       onPress={onPress}
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       style={[
         styles.btn,
         {

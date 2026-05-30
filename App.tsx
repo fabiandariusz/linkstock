@@ -18,6 +18,7 @@ function Shell() {
   const { colors } = useTheme();
   const [tab, setTab] = useState<TabId>('inbox');
   const [readerId, setReaderId] = useState<string | null>(null);
+  const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
 
   const handleAdd = () => {
     Alert.alert('Save a link', 'Paste your URL here — full Save Popover coming in a later slice.');
@@ -25,8 +26,8 @@ function Shell() {
 
   const screen = readerId != null
     ? <ReaderScreen itemId={readerId} onBack={() => setReaderId(null)} />
-    : tab === 'inbox'    ? <StacksScreen onOpenItem={(id) => setReaderId(id)} />
-    : tab === 'shelves'  ? <ShelvesScreen />
+    : tab === 'inbox'    ? <StacksScreen onOpenItem={(id) => setReaderId(id)} collectionFilter={collectionFilter} />
+    : tab === 'shelves'  ? <ShelvesScreen onOpenCollection={(id) => { setCollectionFilter(id); setTab('inbox'); }} />
     : tab === 'search'   ? <SearchScreen />
     : <SettingsScreen />;
 
@@ -36,7 +37,7 @@ function Shell() {
       <View style={styles.content}>
         {screen}
       </View>
-      <BottomNav tab={tab} onTabChange={(t) => { setReaderId(null); setTab(t); }} onAdd={handleAdd} />
+      <BottomNav tab={tab} onTabChange={(t) => { setReaderId(null); setCollectionFilter(null); setTab(t); }} onAdd={handleAdd} />
     </SafeAreaView>
   );
 }

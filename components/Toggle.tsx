@@ -32,7 +32,12 @@ export function Toggle({ on, onToggle }: Props) {
         { backgroundColor: on ? colors.accent : colors.rule },
       ]}
     >
-      <Animated.View style={[styles.knob, { left }]} />
+      <Animated.View
+        style={[
+          styles.knob,
+          { left, backgroundColor: colors.card2, shadowColor: colors.ink },
+        ]}
+      />
     </TouchableOpacity>
   );
 }
@@ -50,8 +55,6 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 999,
-    backgroundColor: '#fbf2dc',
-    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.18,
     shadowRadius: 3,

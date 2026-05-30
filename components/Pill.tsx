@@ -25,7 +25,7 @@ export function Pill({ children, active = false, onPress }: Props) {
       <Text
         style={[
           styles.label,
-          { color: active ? '#fff5e1' : colors.ink2 },
+          { color: active ? colors.card2 : colors.ink2 },
         ]}
       >
         {children}

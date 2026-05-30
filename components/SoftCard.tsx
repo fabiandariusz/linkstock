@@ -10,7 +10,11 @@ type Props = {
 
 export function SoftCard({ children, style, onPress }: Props) {
   const { colors } = useTheme();
-  const cardStyle = [styles.card, { backgroundColor: colors.card, borderColor: colors.ruleSoft }, style];
+  const cardStyle = [
+    styles.card,
+    { backgroundColor: colors.card, borderColor: colors.ruleSoft, shadowColor: colors.ink },
+    style,
+  ];
 
   if (onPress) {
     return (
@@ -27,10 +31,9 @@ const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
     borderRadius: 18,
-    shadowColor: 'rgba(60,40,15,0.18)',
     shadowOffset: { width: 0, height: 6 },
     shadowRadius: 14,
-    shadowOpacity: 1,
+    shadowOpacity: 0.18,
     elevation: 3,
   },
 });

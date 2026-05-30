@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { Alert, View, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
@@ -16,12 +16,18 @@ type TabId = 'inbox' | 'shelves' | 'search' | 'settings';
 function Shell() {
   const { colors } = useTheme();
   const [tab, setTab] = useState<TabId>('inbox');
+  const [readerId, setReaderId] = useState<string | null>(null);
 
-  const screen =
-    tab === 'inbox'    ? <StacksScreen />   :
-    tab === 'shelves'  ? <ShelvesScreen />  :
-    tab === 'search'   ? <SearchScreen />   :
-                         <SettingsScreen />;
+  const handleAdd = () => {
+    Alert.alert('Save a link', 'Paste your URL here — full Save Popover coming in a later slice.');
+  };
+
+  const screen = readerId != null
+    ? <StacksScreen onOpenItem={(id) => setReaderId(id)} />
+    : tab === 'inbox'    ? <StacksScreen onOpenItem={(id) => setReaderId(id)} />
+    : tab === 'shelves'  ? <ShelvesScreen />
+    : tab === 'search'   ? <SearchScreen />
+    : <SettingsScreen />;
 
   return (
     <SafeAreaView style={[styles.root, { backgroundColor: colors.paper }]}>
@@ -29,7 +35,7 @@ function Shell() {
       <View style={styles.content}>
         {screen}
       </View>
-      <BottomNav tab={tab} onTabChange={setTab} onAdd={() => {}} />
+      <BottomNav tab={tab} onTabChange={(t) => { setReaderId(null); setTab(t); }} onAdd={handleAdd} />
     </SafeAreaView>
   );
 }

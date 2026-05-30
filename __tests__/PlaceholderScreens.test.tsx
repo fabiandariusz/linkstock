@@ -1,6 +1,14 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 import { ThemeProvider } from '../hooks/ThemeContext';
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  __esModule: true,
+  default: {
+    getItem: jest.fn(() => Promise.resolve(null)),
+    setItem: jest.fn(() => Promise.resolve()),
+  },
+}));
 import { StacksScreen }   from '../screens/StacksScreen';
 import { ShelvesScreen }  from '../screens/ShelvesScreen';
 import { SearchScreen }   from '../screens/SearchScreen';

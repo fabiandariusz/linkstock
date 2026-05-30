@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Alert, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 
@@ -11,6 +11,7 @@ import { ReaderScreen }   from './screens/ReaderScreen';
 import { ShelvesScreen }  from './screens/ShelvesScreen';
 import { SearchScreen }   from './screens/SearchScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
+import { SavePopover } from './components/SavePopover';
 
 type TabId = 'inbox' | 'shelves' | 'search' | 'settings';
 
@@ -19,10 +20,7 @@ function Shell() {
   const [tab, setTab] = useState<TabId>('inbox');
   const [readerId, setReaderId] = useState<string | null>(null);
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
-
-  const handleAdd = () => {
-    Alert.alert('Save a link', 'Paste your URL here — full Save Popover coming in a later slice.');
-  };
+  const [saveVisible, setSaveVisible] = useState(false);
 
   const screen = readerId != null
     ? <ReaderScreen itemId={readerId} onBack={() => setReaderId(null)} />
@@ -37,7 +35,12 @@ function Shell() {
       <View style={styles.content}>
         {screen}
       </View>
-      <BottomNav tab={tab} onTabChange={(t) => { setReaderId(null); setCollectionFilter(null); setTab(t); }} onAdd={handleAdd} />
+      <BottomNav tab={tab} onTabChange={(t) => { setReaderId(null); setCollectionFilter(null); setTab(t); }} onAdd={() => setSaveVisible(true)} />
+      <SavePopover
+        visible={saveVisible}
+        onClose={() => setSaveVisible(false)}
+        onSaved={() => { setSaveVisible(false); setReaderId(null); setCollectionFilter(null); setTab('inbox'); }}
+      />
     </SafeAreaView>
   );
 }

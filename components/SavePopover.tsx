@@ -13,12 +13,14 @@ interface Props {
   visible: boolean;
   onClose: () => void;
   onSaved: () => void;
+  initialUrl?: string;
+  initialTitle?: string;
 }
 
-export function SavePopover({ visible, onClose, onSaved }: Props) {
+export function SavePopover({ visible, onClose, onSaved, initialUrl = '', initialTitle = '' }: Props) {
   const { colors } = useTheme();
-  const [url, setUrl] = useState('');
-  const [title, setTitle] = useState('');
+  const [url, setUrl] = useState(initialUrl);
+  const [title, setTitle] = useState(initialTitle);
   const [collections, setCollections] = useState<Collection[]>([]);
   const [collectionId, setCollectionId] = useState<string | null>(null);
   const [tagPills, setTagPills] = useState<string[]>([]);
@@ -27,8 +29,8 @@ export function SavePopover({ visible, onClose, onSaved }: Props) {
 
   useEffect(() => {
     if (!visible) return;
-    setUrl('');
-    setTitle('');
+    setUrl(initialUrl);
+    setTitle(initialTitle);
     setTagPills([]);
     setTagInput('');
     setCollectionId(null);

@@ -165,6 +165,16 @@ describe('SavePopover', () => {
     jest.useRealTimers();
   });
 
+  test('pre-fills URL field when initialUrl prop is provided', () => {
+    renderPopover({ initialUrl: 'https://shared.example/page' });
+    expect(screen.getByPlaceholderText('Paste a URL…').props.value).toBe('https://shared.example/page');
+  });
+
+  test('pre-fills Title field when initialTitle prop is provided', () => {
+    renderPopover({ initialTitle: 'Shared Page Title' });
+    expect(screen.getByPlaceholderText('Title').props.value).toBe('Shared Page Title');
+  });
+
   test('tapping a collection chip selects it; tapping again deselects', async () => {
     renderPopover();
     await waitFor(() => screen.getByText('🎨 Design'));

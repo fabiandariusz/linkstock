@@ -28,7 +28,7 @@ function Shell() {
     ? <ReaderScreen itemId={readerId} onBack={() => setReaderId(null)} />
     : tab === 'inbox'    ? <StacksScreen onOpenItem={(id) => setReaderId(id)} collectionFilter={collectionFilter} />
     : tab === 'shelves'  ? <ShelvesScreen onOpenCollection={(id) => { setCollectionFilter(id); setTab('inbox'); }} />
-    : tab === 'search'   ? <SearchScreen />
+    : tab === 'search'   ? <SearchScreen onOpenItem={(id) => setReaderId(id)} />
     : <SettingsScreen />;
 
   return (

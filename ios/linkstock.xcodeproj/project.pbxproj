@@ -9,11 +9,15 @@
 /* Begin PBXBuildFile section */
 		02D3601EB22E6936C064B20A /* libPods-linkstockShareExtension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 64F720B89EBAA227AB8D1E6D /* libPods-linkstockShareExtension.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		19AB884163F14EE29139AD37 /* Outbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4B82F8E1674EB5B778C616 /* Outbox.swift */; };
 		223CB8D5B72947EB85812C9C /* ShareExtensionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E569CB0FB6D74D3B8713E9AA /* ShareExtensionViewController.swift */; };
 		22CFDAA941A747C68C5C1024 /* linkstockShareExtension.appex in Copy Files */ = {isa = PBXBuildFile; fileRef = FE8320828D624426B8B07DC9 /* linkstockShareExtension.appex */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
+		97DCFA8472164114B3AD34C1 /* Outbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 213D2A2ADEE14B3FBA07F80C /* Outbox.m */; };
+		B819624B886B409E80B3BF98 /* Outbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4B82F8E1674EB5B778C616 /* Outbox.swift */; };
 		B9580273117D95D51FA9633D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 8FE1E9F4581A84C29F5A4BEC /* PrivacyInfo.xcprivacy */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		D26980B2FBE14F169329DE3E /* Outbox.m in Sources */ = {isa = PBXBuildFile; fileRef = 213D2A2ADEE14B3FBA07F80C /* Outbox.m */; };
 		E170190F9781E66130F6FA36 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 085BF522383D57F50D8A9AA9 /* ExpoModulesProvider.swift */; };
 		F1039C16B711B41479181B13 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B192413FD5ECF9384E210224 /* ExpoModulesProvider.swift */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
@@ -59,6 +63,7 @@
 		13B07F961A680F5B00A75B9A /* linkstock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = linkstock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = linkstock/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = linkstock/Info.plist; sourceTree = "<group>"; };
+		213D2A2ADEE14B3FBA07F80C /* Outbox.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; name = Outbox.m; path = Outbox.m; sourceTree = "<group>"; };
 		2B784837D75021C3FFB0A124 /* Pods-linkstockShareExtension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linkstockShareExtension.release.xcconfig"; path = "Target Support Files/Pods-linkstockShareExtension/Pods-linkstockShareExtension.release.xcconfig"; sourceTree = "<group>"; };
 		40A3C473F28DF21AE91181BE /* libPods-linkstock.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-linkstock.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D34C1B0444BD11AEC6E3CC2 /* Pods-linkstock.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linkstock.debug.xcconfig"; path = "Target Support Files/Pods-linkstock/Pods-linkstock.debug.xcconfig"; sourceTree = "<group>"; };
@@ -67,6 +72,7 @@
 		A7C0A8BC6E8A4ED7F413F2C4 /* Pods-linkstockShareExtension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linkstockShareExtension.debug.xcconfig"; path = "Target Support Files/Pods-linkstockShareExtension/Pods-linkstockShareExtension.debug.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = linkstock/SplashScreen.storyboard; sourceTree = "<group>"; };
 		AEC47E72053846849F8529EA /* Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = Info.plist; path = Info.plist; sourceTree = "<group>"; };
+		AF4B82F8E1674EB5B778C616 /* Outbox.swift */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.swift; name = Outbox.swift; path = Outbox.swift; sourceTree = "<group>"; };
 		B192413FD5ECF9384E210224 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-linkstock/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		C9ECF68DB550BCB1D35CBD97 /* Pods-linkstock.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-linkstock.release.xcconfig"; path = "Target Support Files/Pods-linkstock/Pods-linkstock.release.xcconfig"; sourceTree = "<group>"; };
@@ -133,6 +139,16 @@
 			name = linkstock;
 			sourceTree = "<group>";
 		};
+		16813D2456034CA292F72568 /* Outbox */ = {
+			isa = PBXGroup;
+			children = (
+				AF4B82F8E1674EB5B778C616 /* Outbox.swift */,
+				213D2A2ADEE14B3FBA07F80C /* Outbox.m */,
+			);
+			name = Outbox;
+			path = Outbox;
+			sourceTree = "<group>";
+		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -171,6 +187,7 @@
 				5FF30047EB45433D9BBCD642 /* linkstockShareExtension */,
 				04FC5D4D0368C06DFC2B0E4A /* Pods */,
 				0655023E1F0A66B8224C70A8 /* ExpoModulesProviders */,
+				16813D2456034CA292F72568 /* Outbox */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -556,6 +573,8 @@
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 				F1039C16B711B41479181B13 /* ExpoModulesProvider.swift in Sources */,
+				19AB884163F14EE29139AD37 /* Outbox.swift in Sources */,
+				D26980B2FBE14F169329DE3E /* Outbox.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -565,6 +584,8 @@
 			files = (
 				223CB8D5B72947EB85812C9C /* ShareExtensionViewController.swift in Sources */,
 				E170190F9781E66130F6FA36 /* ExpoModulesProvider.swift in Sources */,
+				B819624B886B409E80B3BF98 /* Outbox.swift in Sources */,
+				97DCFA8472164114B3AD34C1 /* Outbox.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -9,6 +9,13 @@ import type { Collection } from '../store/store';
 const COLLECTIONS_KEY = 'linkstock:collections';
 const store = createStore(asyncStorageAdapter);
 
+export interface SavePayload {
+  url: string;
+  title: string;
+  tags: string[];
+  collectionId: string | null;
+}
+
 interface Props {
   visible: boolean;
   onClose: () => void;
@@ -16,9 +23,10 @@ interface Props {
   initialUrl?: string;
   initialTitle?: string;
   inline?: boolean;
+  onSave?: (payload: SavePayload) => Promise<void>;
 }
 
-export function SavePopover({ visible, onClose, onSaved, initialUrl = '', initialTitle = '', inline = false }: Props) {
+export function SavePopover({ visible, onClose, onSaved, initialUrl = '', initialTitle = '', inline = false, onSave }: Props) {
   const { colors } = useTheme();
   const [url, setUrl] = useState(initialUrl);
   const [title, setTitle] = useState(initialTitle);
@@ -43,7 +51,21 @@ export function SavePopover({ visible, onClose, onSaved, initialUrl = '', initia
 
   async function handleSave() {
     if (!url.trim()) return;
-    await store.saveItem(url.trim(), { title: title.trim(), collectionId, tags: tagPills });
+    const payload: SavePayload = {
+      url: url.trim(),
+      title: title.trim(),
+      tags: tagPills,
+      collectionId,
+    };
+    if (onSave) {
+      await onSave(payload);
+    } else {
+      await store.saveItem(payload.url, {
+        title: payload.title,
+        collectionId: payload.collectionId,
+        tags: payload.tags,
+      });
+    }
     setPhase('confirm');
     setTimeout(onSaved, 1100);
   }

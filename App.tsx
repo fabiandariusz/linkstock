@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { ThemeProvider, useTheme } from './hooks/ThemeContext';
 import { AppFontLoader } from './hooks/AppFontLoader';
+import { useOutboxDrain } from './hooks/useOutboxDrain';
 import { BottomNav } from './components/BottomNav';
 import { StacksScreen }   from './screens/StacksScreen';
 import { ReaderScreen }   from './screens/ReaderScreen';
@@ -21,10 +22,13 @@ function Shell() {
   const [readerId, setReaderId] = useState<string | null>(null);
   const [collectionFilter, setCollectionFilter] = useState<string | null>(null);
   const [saveVisible, setSaveVisible] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  useOutboxDrain(() => setReloadKey(k => k + 1));
 
   const screen = readerId != null
     ? <ReaderScreen itemId={readerId} onBack={() => setReaderId(null)} />
-    : tab === 'inbox'    ? <StacksScreen onOpenItem={(id) => setReaderId(id)} collectionFilter={collectionFilter} />
+    : tab === 'inbox'    ? <StacksScreen onOpenItem={(id) => setReaderId(id)} collectionFilter={collectionFilter} reloadKey={reloadKey} />
     : tab === 'shelves'  ? <ShelvesScreen onOpenCollection={(id) => { setCollectionFilter(id); setTab('inbox'); }} />
     : tab === 'search'   ? <SearchScreen onOpenItem={(id) => setReaderId(id)} />
     : <SettingsScreen />;
@@ -39,7 +43,7 @@ function Shell() {
       <SavePopover
         visible={saveVisible}
         onClose={() => setSaveVisible(false)}
-        onSaved={() => { setSaveVisible(false); setReaderId(null); setCollectionFilter(null); setTab('inbox'); }}
+        onSaved={() => { setSaveVisible(false); setReaderId(null); setCollectionFilter(null); setTab('inbox'); setReloadKey(k => k + 1); }}
       />
     </SafeAreaView>
   );

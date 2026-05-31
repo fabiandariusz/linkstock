@@ -53,9 +53,10 @@ function savedLabel(isoString: string): string {
 type Props = {
   onOpenItem?: (id: string) => void;
   collectionFilter?: string | null;
+  reloadKey?: number;
 };
 
-export function StacksScreen({ onOpenItem, collectionFilter }: Props) {
+export function StacksScreen({ onOpenItem, collectionFilter, reloadKey = 0 }: Props) {
   const { colors } = useTheme();
   const [items, setItems] = useState<Item[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -84,7 +85,7 @@ export function StacksScreen({ onOpenItem, collectionFilter }: Props) {
       setItems(loaded);
     }
     init();
-  }, []);
+  }, [reloadKey]);
 
   const toggleViewMode = useCallback(async () => {
     const next: ViewMode = viewMode === 'list' ? 'card' : 'list';

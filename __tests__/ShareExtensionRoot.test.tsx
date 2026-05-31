@@ -1,7 +1,18 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react-native';
+import { render, screen, fireEvent, act } from '@testing-library/react-native';
 import { ThemeProvider } from '../hooks/ThemeContext';
 import { ShareExtensionRoot } from '../share-extension/ShareExtensionRoot';
+
+let mockAppend: jest.Mock;
+let mockDrain: jest.Mock;
+
+jest.mock('react-native', () => {
+  const RN = jest.requireActual('react-native');
+  mockAppend = jest.fn().mockResolvedValue(undefined);
+  mockDrain = jest.fn().mockResolvedValue([]);
+  RN.NativeModules.Outbox = { append: mockAppend, drain: mockDrain };
+  return RN;
+});
 
 jest.mock('@react-native-async-storage/async-storage', () => {
   const store: Record<string, string> = {};
@@ -30,7 +41,13 @@ function renderRoot(props: Partial<React.ComponentProps<typeof ShareExtensionRoo
 }
 
 describe('ShareExtensionRoot', () => {
-  test('save writes item to store and calls completeRequest("saved")', async () => {
+  beforeEach(() => {
+    mockAppend.mockClear();
+    mockDrain.mockClear();
+    AsyncStorage.setItem.mockClear();
+  });
+
+  test('save appends to outbox and calls completeRequest("saved")', async () => {
     jest.useFakeTimers();
     const completeRequest = jest.fn();
     renderRoot({ completeRequest });
@@ -38,36 +55,37 @@ describe('ShareExtensionRoot', () => {
     fireEvent.press(screen.getByRole('button', { name: 'Save' }));
     await act(async () => {});
 
-    const saved = AsyncStorage.setItem.mock.calls.find(
-      ([key]: [string]) => key === 'linkstock:items'
-    );
-    expect(saved).toBeTruthy();
-    const items = JSON.parse(saved![1]);
-    expect(items[0]).toMatchObject({
+    expect(mockAppend).toHaveBeenCalledTimes(1);
+    const payload = JSON.parse(mockAppend.mock.calls[0][0]);
+    expect(payload).toMatchObject({
       url: 'https://shared.example/article',
       title: 'Shared Article',
+      tags: [],
+      collectionId: null,
     });
+    expect(typeof payload.createdAt).toBe('string');
+
+    const itemsWritten = AsyncStorage.setItem.mock.calls.some(
+      ([k]: [string]) => k === 'linkstock:items'
+    );
+    expect(itemsWritten).toBe(false);
 
     await act(async () => { jest.advanceTimersByTime(1100); });
     expect(completeRequest).toHaveBeenCalledWith('saved');
     jest.useRealTimers();
   });
 
-  test('Cancel calls completeRequest("cancelled") without writing to store', () => {
+  test('Cancel calls completeRequest("cancelled") without touching outbox', () => {
     const completeRequest = jest.fn();
-    AsyncStorage.setItem.mockClear();
     renderRoot({ completeRequest });
 
     fireEvent.press(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(completeRequest).toHaveBeenCalledWith('cancelled');
-    const itemsWritten = AsyncStorage.setItem.mock.calls.some(
-      ([k]: [string]) => k === 'linkstock:items'
-    );
-    expect(itemsWritten).toBe(false);
+    expect(mockAppend).not.toHaveBeenCalled();
   });
 
-  test('cold-start: saves successfully when shared storage is empty', async () => {
+  test('cold-start: appends even when shared storage is empty', async () => {
     jest.useFakeTimers();
     AsyncStorage.getItem.mockImplementationOnce(async () => null);
     AsyncStorage.getItem.mockImplementationOnce(async () => null);
@@ -77,13 +95,11 @@ describe('ShareExtensionRoot', () => {
     fireEvent.press(screen.getByRole('button', { name: 'Save' }));
     await act(async () => {});
 
-    const saved = AsyncStorage.setItem.mock.calls.find(
-      ([key]: [string]) => key === 'linkstock:items'
-    );
-    expect(saved).toBeTruthy();
-    const items = JSON.parse(saved![1]);
-    expect(items).toHaveLength(1);
-    expect(items[0]).toMatchObject({ url: 'https://cold.example/p', title: 'Cold' });
+    expect(mockAppend).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(mockAppend.mock.calls[0][0])).toMatchObject({
+      url: 'https://cold.example/p',
+      title: 'Cold',
+    });
 
     await act(async () => { jest.advanceTimersByTime(1100); });
     expect(completeRequest).toHaveBeenCalledWith('saved');

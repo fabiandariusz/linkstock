@@ -11,6 +11,7 @@ export function ShareExtensionRoot({ initialUrl, initialTitle, completeRequest }
   return (
     <SavePopover
       visible={true}
+      inline={true}
       initialUrl={initialUrl}
       initialTitle={initialTitle}
       onClose={() => completeRequest('cancelled')}

@@ -15,9 +15,10 @@ interface Props {
   onSaved: () => void;
   initialUrl?: string;
   initialTitle?: string;
+  inline?: boolean;
 }
 
-export function SavePopover({ visible, onClose, onSaved, initialUrl = '', initialTitle = '' }: Props) {
+export function SavePopover({ visible, onClose, onSaved, initialUrl = '', initialTitle = '', inline = false }: Props) {
   const { colors } = useTheme();
   const [url, setUrl] = useState(initialUrl);
   const [title, setTitle] = useState(initialTitle);
@@ -47,9 +48,8 @@ export function SavePopover({ visible, onClose, onSaved, initialUrl = '', initia
     setTimeout(onSaved, 1100);
   }
 
-  return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={styles.backdrop}>
+  const body = (
+    <View style={inline ? styles.inlineRoot : styles.backdrop}>
         <View style={[styles.sheet, { backgroundColor: colors.card }]}>
           {phase === 'confirm' ? (
             <View style={styles.confirmView}>
@@ -147,12 +147,19 @@ export function SavePopover({ visible, onClose, onSaved, initialUrl = '', initia
           </>}
         </View>
       </View>
+  );
+
+  if (inline) return body;
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      {body}
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   backdrop: { flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.35)' },
+  inlineRoot: { flex: 1 },
   sheet:    { borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 20, gap: 12 },
   input:    { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 15 },
   chipRow:  { flexDirection: 'row' },

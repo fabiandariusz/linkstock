@@ -35,10 +35,24 @@
         "expo-share-extension",
         {
           "activationRules": [
-            { "type": "url", "max": 1 }
+            {
+              "type": "url",
+              "max": 1
+            }
+          ],
+          "excludedPackages": [
+            "expo-dom-webview",
+            "expo-splash-screen"
           ]
         }
-      ]
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": { "deploymentTarget": "16.4" }
+        }
+      ],
+      "./plugins/withShareExtensionDeploymentTarget"
     ]
   }
 }

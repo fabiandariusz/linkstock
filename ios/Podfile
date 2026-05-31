@@ -73,7 +73,7 @@ target 'linkstock' do
 end
 
 target 'linkstockShareExtension' do     
-  exclude = ["expo-updates"]
+  exclude = ["expo-updates", "expo-dom-webview", "expo-splash-screen"]
   use_expo_modules!(exclude: exclude)
   
   if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
